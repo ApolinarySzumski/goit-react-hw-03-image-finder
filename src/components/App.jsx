@@ -4,18 +4,22 @@ import { Button } from './Button';
 import { ImageGallery } from './ImageGallery';
 import { ImageGalleryItem } from './ImageGalleryItem';
 import { Loader } from './Loader';
+import { Modal } from './Modal';
 import { Searchbar } from './Searchbar';
 
 export const App = () => {
   const [itemToSearch, setItemToSearch] = useState('');
+  const [itemToSearchLocked, setItemToSearchLocked] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [dataFromApi, setdataFromApi] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  //  const [imageFromModal, setImageFromModal] = useState('');
 
   useEffect(() => {
     if (isLoading)
-      callToApi(itemToSearch, currentPage)
+      callToApi(itemToSearchLocked, currentPage)
         .then(resp => {
           const { id, largeImageURL, webformatURL } = resp.hits;
           setdataFromApi(prev => [
@@ -32,13 +36,20 @@ export const App = () => {
         })
         .finally(() => {
           setIsLoading(false);
-
           setCurrentPage(prev => prev + 1);
         });
   }, [isLoading]);
 
-  const handleSubmit = evt => {
-    evt.preventDefault();
+  useEffect(() => {
+    setdataFromApi([]);
+    setCurrentPage(1);
+    setIsDataLoaded(false);
+  }, [isDataLoaded]);
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    const { value } = e.target[1];
+    setItemToSearchLocked(value);
     setIsLoading(true);
     setIsDataLoaded(true);
   };
@@ -50,7 +61,14 @@ export const App = () => {
 
   const handleClick = () => {
     setIsLoading(true);
+    setIsDataLoaded(false);
   };
+
+  const openModal = e => {
+    if (e.target.nodeName === 'li' || 'img') setIsModalOpen(true);
+  };
+
+  // useEffect(() => {}, [isModalOpen]);
 
   return (
     <div
@@ -62,12 +80,18 @@ export const App = () => {
         color: '#010101',
       }}
     >
-      <Searchbar handleSubmit={handleSubmit} handleChange={handleChange} />
-      <ImageGallery>
-        {isLoading ? <Loader /> : <></>}
-        {isDataLoaded ? <ImageGalleryItem dataFromApi={dataFromApi} /> : <></>}
-        {isDataLoaded ? <Button handleClick={handleClick} /> : <></>}
-      </ImageGallery>
+      {isModalOpen ? (
+        <Modal />
+      ) : (
+        <>
+          <Searchbar handleSubmit={handleSubmit} handleChange={handleChange} />
+          {isLoading ? <Loader /> : <></>}
+          <ImageGallery openModal={openModal}>
+            <ImageGalleryItem dataFromApi={dataFromApi} />
+          </ImageGallery>
+          {currentPage > 1 ? <Button handleClick={handleClick} /> : <></>}
+        </>
+      )}
     </div>
   );
 };

@@ -1,3 +1,7 @@
-export const ImageGallery = ({ children }) => {
-  return <ul className="gallery">{children}</ul>;
+export const ImageGallery = ({ children, openModal }) => {
+  return (
+    <ul className="gallery" onClick={openModal}>
+      {children}
+    </ul>
+  );
 };
