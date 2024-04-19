@@ -1,40 +1,55 @@
 import { callToApi } from 'Functions/callToApi';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Button } from './Button';
 import { ImageGallery } from './ImageGallery';
 import { ImageGalleryItem } from './ImageGalleryItem';
+import { Loader } from './Loader';
 import { Searchbar } from './Searchbar';
 
 export const App = () => {
   const [itemToSearch, setItemToSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [dataFromApi, setdataFromApi] = useState([{}]);
-  const [error, setError] = useState('');
+  const [dataFromApi, setdataFromApi] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
+  useEffect(() => {
+    if (isLoading)
+      callToApi(itemToSearch, currentPage)
+        .then(resp => {
+          const { id, largeImageURL, webformatURL } = resp.hits;
+          setdataFromApi(prev => [
+            ...prev,
+            ...resp.hits.map(r => ({
+              myId: r.id,
+              myLargeImageURL: r.largeImageURL,
+              mySmallImageURL: r.webformatURL,
+            })),
+          ]);
+        })
+        .catch(e => {
+          console.log(e);
+        })
+        .finally(() => {
+          setIsLoading(false);
+
+          setCurrentPage(prev => prev + 1);
+        });
+  }, [isLoading]);
+
   const handleSubmit = evt => {
     evt.preventDefault();
-
-    callToApi(itemToSearch, currentPage)
-      .then(resp => {
-        const { id, largeImageURL, webformatURL } = resp.hits;
-        setdataFromApi(
-          resp.hits.map(r => ({
-            myId: r.id,
-            myLargeImageURL: r.largeImageURL,
-            mySmallImageURL: r.webformatURL,
-          }))
-        );
-        setIsLoading(false);
-        setIsDataLoaded(true);
-      })
-      .catch(e => setError(e))
-      .finally(setIsLoading(true));
+    setIsLoading(true);
+    setIsDataLoaded(true);
   };
 
   const handleChange = e => {
     const { value } = e.target;
     setItemToSearch(value);
+  };
+
+  const handleClick = () => {
+    setIsLoading(true);
   };
 
   return (
@@ -48,8 +63,10 @@ export const App = () => {
       }}
     >
       <Searchbar handleSubmit={handleSubmit} handleChange={handleChange} />
-      <ImageGallery dataFromApi={dataFromApi}>
+      <ImageGallery>
+        {isLoading ? <Loader /> : <></>}
         {isDataLoaded ? <ImageGalleryItem dataFromApi={dataFromApi} /> : <></>}
+        {isDataLoaded ? <Button handleClick={handleClick} /> : <></>}
       </ImageGallery>
     </div>
   );
