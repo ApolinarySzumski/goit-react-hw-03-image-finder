@@ -7,7 +7,7 @@ export const Searchbar = ({ handleSubmit, handleChange }) => {
     <header className={css.Searchbar}>
       <form className={css.SearchForm} onSubmit={handleSubmit}>
         <button type="submit" className={css.SearchFormButton}>
-          <span className={css.SearchFormButtonLabel}>Search</span>
+          <span className={css.SearchFormButtonLabel}>Enter</span>
         </button>
 
         <input
