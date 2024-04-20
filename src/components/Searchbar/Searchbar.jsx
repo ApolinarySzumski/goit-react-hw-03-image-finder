@@ -2,7 +2,12 @@ import css from './Searchbar.module.css';
 
 console.log(css);
 
-export const Searchbar = ({ handleSubmit, handleChange }) => {
+export const Searchbar = ({ handleSubmit, setItemToSearch }) => {
+  const handleChange = e => {
+    const { value } = e.target;
+    setItemToSearch(value);
+  };
+
   return (
     <header className={css.Searchbar}>
       <form className={css.SearchForm} onSubmit={handleSubmit}>
