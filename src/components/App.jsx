@@ -15,7 +15,7 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  //  const [imageFromModal, setImageFromModal] = useState('');
+  const [imageFromModal, setImageFromModal] = useState('');
 
   useEffect(() => {
     if (isLoading)
@@ -66,9 +66,13 @@ export const App = () => {
 
   const openModal = e => {
     if (e.target.nodeName === 'li' || 'img') setIsModalOpen(true);
+    setImageFromModal(e.target.getAttribute('src'));
   };
 
-  // useEffect(() => {}, [isModalOpen]);
+  const closeModal = e => {
+    console.log(e.target.nodeName);
+    if (e.target.nodeName !== 'img') setIsModalOpen(false);
+  };
 
   return (
     <div
@@ -80,18 +84,19 @@ export const App = () => {
         color: '#010101',
       }}
     >
-      {isModalOpen ? (
-        <Modal />
-      ) : (
-        <>
-          <Searchbar handleSubmit={handleSubmit} handleChange={handleChange} />
-          {isLoading ? <Loader /> : <></>}
-          <ImageGallery openModal={openModal}>
-            <ImageGalleryItem dataFromApi={dataFromApi} />
-          </ImageGallery>
-          {currentPage > 1 ? <Button handleClick={handleClick} /> : <></>}
-        </>
-      )}
+      <>
+        <Searchbar handleSubmit={handleSubmit} handleChange={handleChange} />
+        {isModalOpen ? (
+          <Modal imageFromModal={imageFromModal} closeModal={closeModal} />
+        ) : (
+          <></>
+        )}
+        {isLoading ? <Loader /> : <></>}
+        <ImageGallery openModal={openModal}>
+          <ImageGalleryItem dataFromApi={dataFromApi} />
+        </ImageGallery>
+        {currentPage > 1 ? <Button handleClick={handleClick} /> : <></>}
+      </>
     </div>
   );
 };
