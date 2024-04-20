@@ -1,11 +1,12 @@
 import { callToApi } from 'Functions/callToApi';
 import { useEffect, useState } from 'react';
-import { Button } from './Button';
-import { ImageGallery } from './ImageGallery';
-import { ImageGalleryItem } from './ImageGalleryItem';
-import { Loader } from './Loader';
-import { Modal } from './Modal';
-import { Searchbar } from './Searchbar';
+import css from './App.module.css';
+import { Button } from './Button/Button';
+import { ImageGallery } from './ImageGallery/ImageGallery';
+import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
+import { Loader } from './Loader/Loader';
+import { Modal } from './Modal/Modal';
+import { Searchbar } from './Searchbar/Searchbar';
 
 export const App = () => {
   const [itemToSearch, setItemToSearch] = useState('');
@@ -65,26 +66,18 @@ export const App = () => {
   };
 
   const openModal = e => {
-    if (e.target.nodeName === 'li' || 'img') setIsModalOpen(true);
+    console.log(e.target.nodeName);
+    if (e.target.nodeName === 'IMG') setIsModalOpen(true);
     setImageFromModal(e.target.getAttribute('src'));
   };
 
-  const closeModal = e => {
-    console.log(e.target.nodeName);
-    if (e.target.nodeName !== 'img') setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101',
-      }}
-    >
-      <>
+    <>
+      <div className={css.App}>
         <Searchbar handleSubmit={handleSubmit} handleChange={handleChange} />
         {isModalOpen ? (
           <Modal imageFromModal={imageFromModal} closeModal={closeModal} />
@@ -96,7 +89,7 @@ export const App = () => {
           <ImageGalleryItem dataFromApi={dataFromApi} />
         </ImageGallery>
         {currentPage > 1 ? <Button handleClick={handleClick} /> : <></>}
-      </>
-    </div>
+      </div>
+    </>
   );
 };
