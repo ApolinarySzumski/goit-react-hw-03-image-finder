@@ -84,10 +84,10 @@ export const App = () => {
         ) : (
           <></>
         )}
-        {isLoading ? <Loader /> : <></>}
         <ImageGallery openModal={openModal}>
           <ImageGalleryItem dataFromApi={dataFromApi} />
         </ImageGallery>
+        {isLoading ? <Loader /> : <></>}
         {currentPage > 1 ? <Button handleClick={handleClick} /> : <></>}
       </div>
     </>
