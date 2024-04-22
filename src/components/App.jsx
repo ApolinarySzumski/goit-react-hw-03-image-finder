@@ -38,6 +38,7 @@ export const App = () => {
           setIsLoading(false);
           setCurrentPage(prev => prev + 1);
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
   useEffect(() => {
