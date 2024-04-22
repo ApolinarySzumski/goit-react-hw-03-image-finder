@@ -9,7 +9,6 @@ import { Modal } from './Modal/Modal';
 import { Searchbar } from './Searchbar/Searchbar';
 
 export const App = () => {
-  // eslint-disable-next-line no-unused-vars
   const [itemToSearch, setItemToSearch] = useState('');
   const [itemToSearchLocked, setItemToSearchLocked] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,21 +38,31 @@ export const App = () => {
           setIsLoading(false);
           setCurrentPage(prev => prev + 1);
         });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
   useEffect(() => {
-    setdataFromApi([]);
     setCurrentPage(1);
+    setdataFromApi([]);
     setIsDataLoaded(false);
   }, [isDataLoaded]);
 
   const handleSubmit = e => {
     e.preventDefault();
     const { value } = e.target[1];
-    setItemToSearchLocked(value);
-    setIsLoading(true);
-    setIsDataLoaded(true);
+    setCurrentPage(1);
+    if ([...itemToSearch].every(char => char === ' ') === false) {
+      setItemToSearchLocked(value);
+      setIsDataLoaded(true);
+      setIsLoading(true);
+    } else {
+      alert('You must fill the input with your image to find');
+      return false;
+    }
+  };
+
+  const handleChange = e => {
+    const { value } = e.target;
+    setItemToSearch(value);
   };
 
   const handleClick = () => {
@@ -73,10 +82,7 @@ export const App = () => {
   return (
     <>
       <div className={css.App}>
-        <Searchbar
-          handleSubmit={handleSubmit}
-          setItemToSearch={setItemToSearch}
-        />
+        <Searchbar handleSubmit={handleSubmit} handleChange={handleChange} />
         {isModalOpen ? (
           <Modal imageFromModal={imageFromModal} closeModal={closeModal} />
         ) : (
